@@ -25,9 +25,8 @@ type Gslb struct{}
 func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	a := new(dns.Msg)
-	a.SetReply(r)
-	a.Authoritative = true
+	log.Infof("r.MsgHdr=%s", r.MsgHdr.String())
+	log.Infof("r.Extra=%v", r.Extra)
 
 	if opt := r.IsEdns0(); opt != nil {
 		for i := len(r.Extra) - 1; i >= 0; i-- {
@@ -38,6 +37,10 @@ func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (
 		}
 		log.Infof("return opt=%v", opt)
 	}
+	a := new(dns.Msg)
+	a.SetReply(r)
+	a.Authoritative = true
+
 
 	ip := state.IP()
 	var rr dns.RR
