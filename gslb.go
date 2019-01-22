@@ -25,24 +25,11 @@ type Gslb struct{}
 func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	log.Infof("r.MsgHdr=%s", r.MsgHdr.String())
-	log.Infof("r.Extra=%v", r.Extra)
-
-	if opt := r.IsEdns0(); opt != nil {
-		for i := len(r.Extra) - 1; i >= 0; i-- {
-			log.Infof("%d.opt=%+v", i, r.Extra[i])
-			if r.Extra[i].Header().Rrtype == dns.TypeOPT {
-				log.Infof("%d.opt=%s", i, r.Extra[i].(*dns.OPT).String())
-			}
-		}
-		log.Infof("return opt=%v", opt)
-	}
 	a := new(dns.Msg)
 	a.SetReply(r)
 	a.Authoritative = true
 
-
-	ip := state.IP()
+	ip := getRealRequestIP(state)
 	var rr dns.RR
 	var rrs dns.RR
 
@@ -94,3 +81,32 @@ func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (
 
 // Name implements the Handler interface.
 func (wh Gslb) Name() string { return "Gslb" }
+
+
+func getRealRequestIP(req request.Request) string {
+	r := req.Req
+
+	if opt := r.IsEdns0(); opt != nil {
+		// for i := len(r.Extra) - 1; i >= 0; i-- {
+		// 	log.Infof("%d.opt=%+v", i, r.Extra[i])
+		// 	if r.Extra[i].Header().Rrtype == dns.TypeOPT {
+		// 		log.Infof("%d.opt=%s", i, r.Extra[i].(*dns.OPT).String())
+		// 	}
+		// }
+		for _, o := range opt.Option {
+			switch v := o.(type) {
+			case *dns.EDNS0_SUBNET:
+				switch v.Family {
+				case 1:
+					return v.Address.To4().String()
+				case 2:
+					return v.Address.String()
+				}
+			}
+		}
+		log.Infof("return opt=%v", opt)
+		log.Infof("return opt Header=%v", opt.Hdr.String())
+	}
+
+	return req.IP()
+}
