@@ -7,7 +7,7 @@ import (
 	"github.com/mholt/caddy"
 )
 
-var ipToZoneUrl string
+var ipToZoneURL string
 
 func init() {
 	caddy.RegisterPlugin("gslb", caddy.Plugin{
@@ -19,8 +19,8 @@ func init() {
 func setup(c *caddy.Controller) error {
 	c.Next() // 'Gslb'
 	if c.NextArg() {
-		ipToZoneUrl = c.Val()
-		if ipToZoneUrl == "" {
+		ipToZoneURL = c.Val()
+		if ipToZoneURL == "" {
 			return plugin.Error("gslb must have a request host", c.ArgErr())
 		}
 	}

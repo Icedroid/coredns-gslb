@@ -9,8 +9,9 @@ import (
 	"time"
 )
 
-const ipipNetBaseUrl = "http://freeapi.ipip.net/"
+const ipipNetBaseURL = "http://freeapi.ipip.net/"
 const defaultZoneIP = "14.215.109.226"
+
 var cityMap = map[string]string{
 	"广州": "14.215.109.226",
 	"内蒙": "93.184.216.33",
@@ -18,15 +19,15 @@ var cityMap = map[string]string{
 
 // city to zone ip
 // TODO: change to use external services
-func getIPNetUrl(url, ip string) string {
+func getIPNetURL(url, ip string) string {
 	if url == "" {
-		url = ipipNetBaseUrl
+		url = ipipNetBaseURL
 	}
 	return strings.TrimRight(url, "/") + "/" + ip
 }
 
 // get ip location info from ipip.net
-func requestUrl(url string) (ip string, err error) {
+func requestURL(url string) (ip string, err error) {
 	ip = defaultZoneIP
 	var netTransport = &http.Transport{
 		Dial: (&net.Dialer{
@@ -57,7 +58,7 @@ func requestUrl(url string) (ip string, err error) {
 	if sl, ok := v.([]interface{}); ok && len(sl) > 3 { //ipip.net
 		if city, ok := sl[2].(string); ok && city != "" {
 			if c, ok := cityMap[city]; ok {
-				log.Infof("ipip.net zone ip=%s", c)
+				log.Infof("zone ip=%s", c)
 				ip = c
 			}
 		}

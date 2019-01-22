@@ -1,4 +1,4 @@
-// Package Gslb implements a plugin that returns details about the resolving
+// Package gslb implements a plugin that returns details about the resolving
 // querying it.
 package gslb
 
@@ -29,11 +29,21 @@ func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (
 	a.SetReply(r)
 	a.Authoritative = true
 
+	if opt := r.IsEdns0(); opt != nil {
+		for i := len(r.Extra) - 1; i >= 0; i-- {
+			log.Infof("%d.opt=%+v", i, r.Extra[i])
+			if r.Extra[i].Header().Rrtype == dns.TypeOPT {
+				log.Infof("%d.opt=%s", i, r.Extra[i].(*dns.OPT).String())
+			}
+		}
+		log.Infof("return opt=%v", opt)
+	}
+
 	ip := state.IP()
 	var rr dns.RR
 	var rrs dns.RR
 
-	url := getIPNetUrl(ipToZoneUrl, ip)
+	url := getIPNetURL(ipToZoneURL, ip)
 	log.Infof("request url=%s", url)
 
 	log.Infof("state IP=%s, QName=%s, QClass=%d, QType=%d, Proto=%s, Family=%d", ip, state.QName(), state.QClass(),
@@ -45,7 +55,7 @@ func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (
 		rr.(*dns.A).Hdr = dns.RR_Header{Name: state.QName(), Rrtype: dns.TypeA, Class: state.QClass()}
 		rr.(*dns.A).A = net.ParseIP(ip).To4()
 
-		zoneIP, err := requestUrl(url)
+		zoneIP, err := requestURL(url)
 		if err != nil {
 			log.Errorf("request url for fecth zone ip error=%s", err)
 		}
