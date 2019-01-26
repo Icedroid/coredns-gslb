@@ -14,7 +14,7 @@ const defaultZoneIP = "14.215.109.226"
 
 var cityMap = map[string]string{
 	"广州": "14.215.109.226",
-	"内蒙": "93.184.216.33",
+	"内蒙": "36.111.140.27",
 }
 
 // city to zone ip

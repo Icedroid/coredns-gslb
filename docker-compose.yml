@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  coredns-gslb:
+    image: coredns-gslb
+    build: .
+    ports:
+      - 3000:3000
