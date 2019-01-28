@@ -92,9 +92,12 @@ func getRealRequestIP(req request.Request) string {
 		// 		log.Infof("%d.opt=%s", i, r.Extra[i].(*dns.OPT).String())
 		// 	}
 		// }
+		log.Infof("return opt=%v", opt)
+		log.Infof("return opt Header=%v", opt.Hdr.String())
 		for _, o := range opt.Option {
 			switch v := o.(type) {
 			case *dns.EDNS0_SUBNET:
+				log.Info("get ip from ESubnet0")
 				switch v.Family {
 				case 1:
 					return v.Address.To4().String()
@@ -103,8 +106,7 @@ func getRealRequestIP(req request.Request) string {
 				}
 			}
 		}
-		log.Infof("return opt=%v", opt)
-		log.Infof("return opt Header=%v", opt.Hdr.String())
+
 	}
 
 	return req.IP()
