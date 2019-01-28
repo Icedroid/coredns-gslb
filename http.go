@@ -10,7 +10,7 @@ import (
 )
 
 const ipipNetBaseURL = "http://freeapi.ipip.net/"
-const defaultZoneIP = "36.111.140.27"
+const defaultZoneIP = "14.215.109.226"
 
 var cityMap = map[string]string{
 	"广东":  "14.215.109.226",
