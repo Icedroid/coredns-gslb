@@ -25,9 +25,9 @@ type Gslb struct{}
 func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	a := new(dns.Msg)
-	a.SetReply(r)
-	a.Authoritative = true
+	msg := new(dns.Msg)
+	msg.SetReply(r)
+	msg.Authoritative = true
 
 	ip := getRealRequestIP(state)
 	var rr dns.RR
@@ -71,17 +71,16 @@ func (wh Gslb) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (
 	srv.Port = uint16(port)
 	srv.Target = "."
 
-	a.Answer = []dns.RR{rrs}
-	a.Extra = []dns.RR{rr, srv}
+	msg.Answer = []dns.RR{rrs}
+	msg.Extra = []dns.RR{rr, srv}
 
-	w.WriteMsg(a)
+	w.WriteMsg(msg)
 
 	return 0, nil
 }
 
 // Name implements the Handler interface.
 func (wh Gslb) Name() string { return "Gslb" }
-
 
 func getRealRequestIP(req request.Request) string {
 	r := req.Req

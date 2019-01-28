@@ -10,11 +10,11 @@ import (
 )
 
 const ipipNetBaseURL = "http://freeapi.ipip.net/"
-const defaultZoneIP = "14.215.109.226"
+const defaultZoneIP = "36.111.140.27"
 
 var cityMap = map[string]string{
-	"广州": "14.215.109.226",
-	"内蒙": "36.111.140.27",
+	"广东":  "14.215.109.226",
+	"内蒙古": "36.111.140.27",
 }
 
 // city to zone ip
@@ -56,7 +56,7 @@ func requestURL(url string) (ip string, err error) {
 	log.Infof("ipip.net response data=%v", v)
 
 	if sl, ok := v.([]interface{}); ok && len(sl) > 3 { //ipip.net
-		if city, ok := sl[2].(string); ok && city != "" {
+		if city, ok := sl[1].(string); ok && city != "" { //province=>zone ip
 			if c, ok := cityMap[city]; ok {
 				log.Infof("zone ip=%s", c)
 				ip = c
