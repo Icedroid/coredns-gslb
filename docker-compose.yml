@@ -2,7 +2,12 @@ version: '2.1'
 
 services:
   coredns-gslb:
-    image: coredns-gslb
-    build: .
+    image: coredns-gslb:0.0.1
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - 1053:53
+      - 1053:53/udp
+    volumes:
+      - .:/app
