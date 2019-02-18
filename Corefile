@@ -1,0 +1,13 @@
+example.org {
+    forward . 114.114.114.114
+    #example
+}
+
+abcdefgh.fun:53 {
+    #file db.abcdefgh.fun
+}
+
+. {
+    gslb http://freeapi.ipip.net/
+    log
+}

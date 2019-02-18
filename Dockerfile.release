@@ -1,0 +1,16 @@
+#docker run -it --rm=true -d -v $PWD:/coredns -p 53:53/udp -p 53:53 coredns
+FROM debian:stable-slim
+
+RUN apt-get update && apt-get -uy upgrade
+RUN apt-get -y install ca-certificates && update-ca-certificates
+
+FROM scratch
+
+COPY --from=0 /etc/ssl/certs /etc/ssl/certs
+ADD coredns /coredns/coredns
+ADD Corefile /coredns/Corefile
+COPY db* /coredns/
+
+WORKDIR /coredns
+EXPOSE 53 53/udp
+ENTRYPOINT ["./coredns", "-conf", "./Corefile"]
